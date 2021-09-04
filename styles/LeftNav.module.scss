@@ -1,0 +1,54 @@
+.leftNav{
+    max-width:220px;
+    height:90vh;
+    border-right:1px solid #ccc;
+    overflow:hidden;
+    float:left;
+    overflow:hidden;
+
+    ul{
+        list-style: none;
+        padding-left:0px;
+        font-size:1.1em;
+    }
+
+    li{
+        margin:0px 8px 7px 3px;
+        padding:5px;
+        width:200px;
+
+        a:hover::before{
+            content: " ";
+            padding-left:5px;
+        }
+    }    
+    
+}
+
+.active{
+    font-weight: bold;
+    &::before{
+        content: " ";
+    }
+}
+
+
+.show{
+    width:220px;    
+    @media (max-width:767px) {
+        width:35px;    
+    }
+    transition: width 1s;
+}  
+
+
+
+.hide{
+    width:35px;
+    transition: width 1s;
+}
+
+
+
+
+
