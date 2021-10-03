@@ -75,7 +75,13 @@ header div{
 
 .full-width{
   width:calc(100% - 60px);
-  transition: width 1s;
+  margin-left:40px;
+  transition: all 1s;
+}
+
+.shrink-width{
+  margin-left: 200px;
+  transition: all 1s;
 }
 
 .table{
@@ -109,3 +115,24 @@ svg{
   min-width:100px;
 }
 
+.custom-select{
+
+}
+
+.cursor-pointer{
+  cursor: pointer;
+}
+
+nav{
+  li{
+    a{
+      cursor: pointer;
+    }
+    &.disabled{
+      a{
+        color: lightgray !important;
+      }
+      
+    }
+  }
+}

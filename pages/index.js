@@ -13,7 +13,9 @@ export default function Home() {
   const global = useContext(GlobalContext);
 
   useEffect(() => {
+    console.log('dashboard', global)
     global.update({ ...global, ...{ pageTitle: "Dashboard" } });
+    console.log('dashboard2', global)
   }, [])
 
   return (
@@ -25,10 +27,8 @@ export default function Home() {
 
 Home.getLayout = function getLayout(page) {
   return (
-    <>
-      <Layout>
-        {page}
-      </Layout>
-    </>
+    <Layout>
+      {page}
+    </Layout>
   )
 }

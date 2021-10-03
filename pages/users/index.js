@@ -8,33 +8,67 @@ import ButtonV1 from "../../components/input/ButtonV1";
 import { toast } from 'react-toastify';
 import CreateUser from "../../components/forms/CreateUser";
 import UpdateUser from "../../components/forms/UpdateUser";
-
-const sampleData = [
-  { index: 1, email: "test1@test.com", active: "Yes", role: { name: "Administrator" }, registered_at: "2021-09-04 12:32", name: "User 1" },
-  { index: 2, email: "test2@test.com", active: "Yes", role: { name: "DevOps" }, registered_at: "2021-09-03 12:32", name: "User 2" },
-  { index: 3, email: "test3@test.com", active: "Yes", role: { name: "DevOps" }, registered_at: "2021-09-02 10:12", name: "User 3" },
-  { index: 4, email: "test4@test.com", active: "Yes", role: { name: "Security" }, registered_at: "2021-09-04 15:01", name: "User 4" },
-  { index: 5, email: "test5@test.com", active: "Yes", role: { name: "Security" }, registered_at: "2021-09-03 12:04", name: "User 5" },
-  { index: 6, email: "test6@test.com", active: "Yes", role: { name: "Security" }, registered_at: "2021-09-01 12:41", name: "User 6" },
-  { index: 7, email: "test7@test.com", active: "Yes", role: { name: "Manager" }, registered_at: "2021-09-02 13:32", name: "User 7" },
-  { index: 8, email: "test8@test.com", active: "Yes", role: { name: "Manager" }, registered_at: "2021-09-02 09:32", name: "User 8" },
-  { index: 9, email: "test9@test.com", active: "Yes", role: { name: "DevOps" }, registered_at: "2021-09-04 09:32", name: "User 9" },
-  { index: 10, email: "test10@test.com", active: "Yes", role: { name: "DevOps" }, registered_at: "2021-09-04 10:42", name: "User 10" },
-]
+import SelectV1 from "../../components/input/SelectV1";
+import Confirm from "../../components/input/Confirm";
+import Axios from '../../hooks/useApi';
+import axios from "axios";
+import { useQuery } from "react-query";
 
 const tdConfig = { index: { align: 'right', width: '30px' }, active: { width: '23px', align: 'center' }, name: { align: 'left' }, registered_at: { align: 'center' }, role: { align: 'center', key: 'name' }, email: { align: 'left' } }
 const headings = { index: '#', email: 'Email', active: "Active", role: 'Role', registered_at: 'Registered Date/Time', name: "Name" }
 
+async function fetchUsers(page = 1, username = null, role = null, group = null) {
+  const { data } = await Axios.get('user-service/v1/users?page=' + page)
+  return data;
+}
+
+async function deleteUser(id, callback) {
+  const { data } = await Axios.delete('user-service/v1/users/' + id)
+  callback();
+  return data;
+}
+
+async function getGroups() {
+  const { data } = await Axios.get('user-service/v1/groups?limit=' + 100);
+  return data.data;
+}
+
+async function getRoles() {
+  const { data } = await Axios.get('user-service/v1/roles?limit=' + 100);
+  return data.data;
+}
+
 export default function Users() {
   const global = useContext(GlobalContext);
-  const [loading, setLoading] = useState(true);
-  const [data, setData] = useState(null);
-  const [pagination, setPagination] = useState(null);
   const [showCreate, setShowCreate] = useState(false);
   const [showUpdate, setShowUpdate] = useState(false);
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [updateId, setUpdateId] = useState(null);
+  const [deleteId, setDeleteId] = useState(null);
+  const [page, setPage] = useState(1);
+  const [group, setGroup] = useState(null);
+  const [role, setRole] = useState(null);
+  const [usernameFilter, setUsernameFilter] = useState("");
 
-  const createGroupHandler = () => {
+  const { status, data, error, isFetching, isPreviousData, refetch } = useQuery(
+    ['users', page],
+    () => fetchUsers(page),
+    { keepPreviousData: false, staleTime: 5000 }
+  )
+
+  const { data: groupOptions } = useQuery(
+    ['groups'],
+    () => getGroups(),
+    { staleTime: 5000 }
+  )
+
+  const { data: roleOptions } = useQuery(
+    ['roles'],
+    () => getRoles(),
+    { staleTime: 5000 }
+  )
+
+  const createUserHandler = () => {
     setShowCreate(true);
   }
 
@@ -43,35 +77,50 @@ export default function Users() {
     setShowUpdate(true);
   }
 
-  const resolveAfter3Sec = new Promise(resolve => setTimeout(() => resolve("world"), 3000));
-  const notify = () => toast.promise(resolveAfter3Sec, {
-    pending: 'Processing',
-    success: { render({ data }) { return `Success ${data}` } },
-    error: 'Error'
-  });
+  const deleteUserHandler = (id) => {
+    setDeleteId(id);
+    setShowDeleteConfirmation(true);
+  }
+
+  const deleteUserCallback = () => {
+    toast.promise(deleteUser(deleteId, refetch), {
+      pending: 'Processing',
+      success: { render({ data }) { return `Success ${data}` } },
+      error: 'Error'
+    });
+    setShowDeleteConfirmation(false);
+  }
 
   useEffect(() => {
     global.update({ ...global, ...{ pageTitle: "Users" } });
-
-    //Testing only
-    setTimeout(() => {
-      setLoading(false);
-      setData(sampleData);
-      setPagination(true);
-    }, 5000);
   }, []);
+
+  useEffect(() => {
+    if (data && data.meta && data.meta.current_page && (data.meta.current_page > data.meta.num_pages)) {
+      setPage(data.meta.num_pages);
+    }
+  }, [data, page]);
+
+  useEffect(() => {
+    refetch();
+  }, [role, group, usernameFilter]);
 
   return (
     <div>
       <h4>List of Users <FontAwesomeIcon icon={['fas', 'user']} fixedWidth /></h4> <pre>User Management functions.</pre>
+
       <div className="row">
         <div className="col-md-6">
           <h6>Filter by</h6>
-          <InputV1 label="User Name" shortcut="Ctrl + Shift + F" />
+          <InputV1 label="User Name" shortcut="Ctrl + Shift + F" value={usernameFilter} setValue={setUsernameFilter} />
+          {roleOptions ?
+            <SelectV1 label="Role" value={role} setValue={setRole} values={roleOptions} setValue={setRole} /> : null}
+          {groupOptions ?
+            <SelectV1 label="Group" values={groupOptions} value={group} setValue={setGroup} /> : null}
         </div>
         <div className="col-md-6">
           <h6>Actions</h6>
-          <ButtonV1 onClick={createGroupHandler} label="Register User" shortcut="Ctrl + Shift + C" />
+          <ButtonV1 onClick={createUserHandler} label="Register User" shortcut="Ctrl + Shift + C" />
         </div>
       </div>
       <table className="table table-hover table-bordered">
@@ -84,17 +133,19 @@ export default function Users() {
             <th className="text-center">Actions</th>
           </tr>
         </thead>
-        {data ? (
+
+        {data && data.data ? (
           <tbody>
-            {data.map((d, dataIndex) => {
+            {data.data.map((d, dataIndex) => {
               return (
                 <tr key={dataIndex}>
-                  {Object.keys(d).map((key) => {
+                  {Object.keys(headings).map((key) => {
                     return <td key={dataIndex + "_" + key} width={tdConfig[key] ? tdConfig[key].width : null} align={tdConfig[key] ? tdConfig[key].align : null}>{typeof d[key] === 'object' ? d[key][tdConfig[key]['key']] : d[key]}</td>
                   })}
-                  <td width="200px" align="center">
+                  <td width="250px" align="center">
+                    <a href="#" className="btn btn-outline-primary btn-sm">Password Reset</a>&nbsp;
                     <a href="#" className="btn btn-outline-primary btn-sm" onClick={() => { updateGroupHandler(dataIndex) }}>Edit</a>&nbsp;
-                    <a href="#" className="btn btn-outline-danger btn-sm">Delete</a>
+                    <a className="btn btn-outline-danger btn-sm" onClick={() => { deleteUserHandler(d.id) }}>Delete</a>
                   </td>
                 </tr>
               )
@@ -102,7 +153,7 @@ export default function Users() {
           </tbody>
         ) : null}
 
-        {!loading && !data ? (
+        {!isFetching && !data ? (
           <tbody>
             <tr key="noresults">
               <td align="center" className="display-6" colSpan={Object.keys(headings).length + 1}>No Results</td>
@@ -111,17 +162,17 @@ export default function Users() {
         ) : null}
       </table>
 
-      {loading ? (
+      {isFetching ? (
         <div className="text-center"><FontAwesomeIcon icon={['fas', 'circle-notch']} spin size="5x" /></div>
       ) : null}
 
-      {pagination ? (
-        <Pagination />
+      {data && data.meta && data.meta.num_pages > 0 ? (
+        <Pagination num_pages={data.meta.num_pages} current_page={page} setPage={setPage} />
       ) : null}
 
-      <button onClick={notify}>Notify!</button>
-      <CreateUser show={showCreate} setShow={setShowCreate} />
-      <UpdateUser id={updateId} show={showUpdate} setShow={setShowUpdate} data={sampleData} />
+      <CreateUser show={showCreate} setShow={setShowCreate} refetch={refetch} />
+      {/* <UpdateUser id={updateId} show={showUpdate} setShow={setShowUpdate} data={sampleData} /> */}
+      <Confirm show={showDeleteConfirmation} setShow={setShowDeleteConfirmation} callback={deleteUserCallback} />
     </div>
   )
 }

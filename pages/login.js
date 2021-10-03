@@ -1,37 +1,73 @@
-import React from "react";
+import React, { useContext, useState, useEffect } from "react";
 import Layout from "../layout/unauthenticated";
 import styles from "../styles/login.module.scss";
 import Link from 'next/link'
+import useApi from "../hooks/useApi";
+import GlobalContext from "../utils/GlobalContext";
+import { useRouter } from 'next/router';
+import axios from "axios";
+import Axios from "../hooks/useApi";
+
+
 
 export default function Login() {
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+    const [otp, setOtp] = useState("");
+    const [errors, setErrors] = useState("");
+    const global = useContext(GlobalContext);
+    const router = useRouter();
+    const [response, setResponse] = useState(null);
+
+    async function login(username, password, otp) {
+        const response = await Axios.post('/oauth/token', `username=${username}&password=${password}&otp=${otp}`);
+        if (response.status !== 200 && response.data && response.data.detail) {
+            setErrors(response.data.detail);
+            return false;
+        }
+        router.push('/');
+    }
+
+    // const [{ response, loading }, loginAPIHandler] = useApi(
+    //     {
+    //         url: '/oauth/token',
+    //         method: "POST",
+    //     },
+    //     { manual: true }
+    // )
+
+    const loginHandler = () => {
+        login(username, password, otp);
+    }
+
     return (
         <div className={[styles.form, "col-md-6"].join(" ")}>
             <pre><h1>Login</h1></pre>
-            <form>
-                <small id="emailHelp" className="form-text text-muted">Enter your login details below</small>
-                <pre>
-                    <input type="email" className="form-control" id="email" aria-describedby="emailHelp" placeholder="Enter email" />
-                    <br />
-                    <input type="password" className="form-control" id="password" placeholder="Password" />
-                    <br />
-                    <input type="password" className="form-control" id="password" placeholder="Ontime Password (OTP)" />
-                </pre>
 
-                {/* <small id="emailHelp" className="form-text text-muted">Hit Enter >> </small> */}
-                <Link href="/" passRef>
-                    <button type="submit" className="btn btn-primary">Login</button>
-                </Link>
-            </form>
+            <small id="emailHelp" className="form-text text-muted">Enter your login details below</small>
+            <pre>
+                <input type="email" name="username" required={true} value={username} onChange={(e) => setUsername(e.target.value)} className="form-control" id="email" aria-describedby="emailHelp" placeholder="Enter email" />
+                <br />
+                <input type="password" name="password" required={true} value={password} onChange={(e) => setPassword(e.target.value)} className="form-control" id="password" placeholder="Password" />
+                <br />
+                <input type="text" name="otp" autoComplete="off" required={true} value={otp} onChange={(e) => setOtp(e.target.value)} className="form-control" id="password" placeholder="Ontime Password (OTP)" />
+            </pre>
+
+            {errors ? (
+                <div className="alert alert-warning">
+                    {errors}
+                </div>) :
+                null}
+            <button type="submit" className="btn btn-primary" onClick={loginHandler}>Login</button>
+
         </div>
     )
 }
 
 Login.getLayout = function getLayout(page) {
     return (
-        <>
-            <Layout>
-                {page}
-            </Layout>
-        </>
+        <Layout>
+            {page}
+        </Layout>
     )
 }

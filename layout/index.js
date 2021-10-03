@@ -1,37 +1,35 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect } from "react";
 import Headers from "../components/Headers";
 import LeftNav from "../components/LeftNav";
 import GlobalContext from "../utils/GlobalContext";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useRouter } from 'next/router';
 
 function index({ children }) {
-  const [state, setState] = useState({
-    menuState: true,
-    update
-  });
+  const router = useRouter()
+  const global = useContext(GlobalContext)
 
-  function update(data) {
-    setState(Object.assign({}, state, data));
-  }
-
-  const resolveAfter3Sec = new Promise(resolve => setTimeout(() => resolve("world"), 3000));
-
-
+  useEffect(() => {
+    const loginStatus = localStorage.getItem('isLoggedIn');
+    if (loginStatus === 'TRUE') {
+      global.update({ ...global, ...{ loggedIn: true } });
+    } else {
+      router.push('/login')
+    }
+  }, [])
 
   return (
     <>
-      <GlobalContext.Provider value={state}>
-        <Headers />
+      <Headers />
 
-        <div>
-          <ToastContainer autoClose={8000} />
-          <LeftNav />
-          <div className={["main-content", state.menuState ? "shrink-width" : "full-width"].join(" ")}>
-            {children}
-          </div>
+      <div>
+        <ToastContainer autoClose={8000} />
+        <LeftNav />
+        <div className={["main-content", global.menuState ? "shrink-width" : "full-width"].join(" ")}>
+          {children}
         </div>
-      </GlobalContext.Provider>
+      </div>
     </>
   );
 }

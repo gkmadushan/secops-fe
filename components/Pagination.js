@@ -1,20 +1,21 @@
+import { range } from 'd3-array'
 import React from 'react'
 
-function Pagination({ totalRecords, limit }) {
+function Pagination({ num_pages, current_page, setPage }) {
     return (
-        <nav aria-label=" navigation ">
+        <nav aria-label="navigation">
             <ul className="pagination justify-content-left">
-                <li key={Math.random()} className="page-item disabled">
-                    <a className="page-link" href="#" tabIndex="-1">Previous</a>
+                <li className={["page-item", current_page === 1 ? "disabled" : ""].join(" ")}>
+                    <a className="page-link" onClick={() => { setPage(1) }} tabIndex="-1">Previous</a>
                 </li>
-                <li key={Math.random()} className="page-item"><a className="page-link" href="#">1</a></li>
-                <li key={Math.random()} className="page-item"><a className="page-link" href="#">2</a></li>
-                <li key={Math.random()} className="page-item"><a className="page-link" href="#">3</a></li>
-                <li key={Math.random()} className="page-item">
-                    <a className="page-link" href="#">Next</a>
+                {range(num_pages).map((menu, index) => {
+                    return <li className={["page-item ", current_page === index + 1 ? "active" : null].join(" ")}><a className="page-link cursor-pointer" onClick={() => { setPage(index + 1) }}>{index + 1}</a></li>
+                })}
+                <li className={["page-item", current_page === num_pages ? "disabled" : ""].join(" ")}>
+                    <a className="page-link" onClick={() => { setPage(num_pages) }}>Next</a>
                 </li>
             </ul>
-        </nav>
+        </nav >
     )
 }
 

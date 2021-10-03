@@ -10,15 +10,11 @@ import GlobalContext from "../utils/GlobalContext";
 function Headers() {
   const global = useContext(GlobalContext);
   const menuHandler = () => {
-    global.update({
+    global.update(...{
       menuState: !global.menuState,
-      pageTitle: global.pageTitle
     });
   }
 
-  useEffect(() => {
-    console.log(global)
-  }, [global])
   return (
     <header>
       <Image src={global.menuState ? HideMenu : Menu} onClick={menuHandler} className="pointer d-none d-md-block" />

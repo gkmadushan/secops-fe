@@ -1,10 +1,13 @@
 .leftNav{
-    max-width:220px;
+    max-width:210px;
     height:90vh;
     border-right:1px solid #ccc;
     overflow:hidden;
     float:left;
     overflow:hidden;
+    position: fixed;
+    top:90px;
+    display: block;
 
     ul{
         list-style: none;

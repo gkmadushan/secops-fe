@@ -1,16 +1,30 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 
-function SelectV1({ label, shortcut, values }) {
+function SelectV1({ label, shortcut, required = false, validationError = false, value, values, setValue = () => { console.log('Missing Set Value Prop') } }) {
+    const generateOptionList = (values) => {
+        let options = []
+        if (values) {
+            for (const option of values) {
+                options.push({ "label": option.name, "checked": false, "id": option.id })
+            }
+            return options;
+        }
+        return []
+    }
+    const [options, setOptions] = useState(generateOptionList(values));
+    const handleChange = (e) => {
+        setValue(e.target.value);
+    }
     return (
         <div className="input-group mb-3">
             <div className="input-group">
                 <div className="input-group-prepend">
                     <span className="input-group-text" id="inputGroup-sizing-default">{label} {shortcut ? <span className="code">({shortcut})</span> : null}</span>
                 </div>
-                <select class="form-control" id="inputGroupSelect01">
-                    <option selected>Choose...</option>
-                    {values.map((value, index) => {
-                        return <option value={index}>{value}</option>
+                <select value={value} onChange={(e) => { handleChange(e) }} className="form-control" id="inputGroupSelect01" required={required} onInvalid={(e) => { validationError ? e.target.setCustomValidity(validationError) : null }} onInput={(e) => { e.target.setCustomValidity("") }} >
+                    <option value="">Choose...</option>
+                    {options.map((option, index) => {
+                        return <option key={index} value={option["id"]}>{option["label"]}</option>
                     })}
                 </select>
             </div>
