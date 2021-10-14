@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 
 function SelectV1({ label, shortcut, required = false, validationError = false, value, values, setValue = () => { console.log('Missing Set Value Prop') } }) {
     const generateOptionList = (values) => {
@@ -11,10 +11,11 @@ function SelectV1({ label, shortcut, required = false, validationError = false, 
         }
         return []
     }
-    const [options, setOptions] = useState(generateOptionList(values));
+    const [options] = useState(generateOptionList(values));
     const handleChange = (e) => {
         setValue(e.target.value);
     }
+    console.log('SELECT', value)
     return (
         <div className="input-group mb-3">
             <div className="input-group">
@@ -24,7 +25,7 @@ function SelectV1({ label, shortcut, required = false, validationError = false, 
                 <select value={value} onChange={(e) => { handleChange(e) }} className="form-control" id="inputGroupSelect01" required={required} onInvalid={(e) => { validationError ? e.target.setCustomValidity(validationError) : null }} onInput={(e) => { e.target.setCustomValidity("") }} >
                     <option value="">Choose...</option>
                     {options.map((option, index) => {
-                        return <option key={index} value={option["id"]}>{option["label"]}</option>
+                        return <option key={index} value={option["id"]} selected={option["id"] === value ? true : false} >{option["label"]}</option>
                     })}
                 </select>
             </div>

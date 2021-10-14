@@ -11,14 +11,16 @@ import UpdateUser from "../../components/forms/UpdateUser";
 import SelectV1 from "../../components/input/SelectV1";
 import Confirm from "../../components/input/Confirm";
 import Axios from '../../hooks/useApi';
-import axios from "axios";
 import { useQuery } from "react-query";
+import qs from 'qs'
 
-const tdConfig = { index: { align: 'right', width: '30px' }, active: { width: '23px', align: 'center' }, name: { align: 'left' }, registered_at: { align: 'center' }, role: { align: 'center', key: 'name' }, email: { align: 'left' } }
-const headings = { index: '#', email: 'Email', active: "Active", role: 'Role', registered_at: 'Registered Date/Time', name: "Name" }
 
-async function fetchUsers(page = 1, username = null, role = null, group = null) {
-  const { data } = await Axios.get('user-service/v1/users?page=' + page)
+const tdConfig = { index: { align: 'right', width: '30px' }, active: { width: '23px', align: 'center' }, name: { align: 'left' }, created_at: { align: 'center' }, role: { align: 'center', key: 'name' }, email: { align: 'left' } }
+const headings = { index: '#', email: 'Email', active: "Active", role: 'Role', created_at: 'Registered Date/Time', name: "Name" }
+
+async function fetchUsers(page = 1, requestParams = []) {
+  const queryString = qs.stringify(requestParams);
+  const { data } = await Axios.get('user-service/v1/users?page=' + page + '&' + queryString)
   return data;
 }
 
@@ -50,9 +52,9 @@ export default function Users() {
   const [role, setRole] = useState(null);
   const [usernameFilter, setUsernameFilter] = useState("");
 
-  const { status, data, error, isFetching, isPreviousData, refetch } = useQuery(
+  const { status, data, error, isFetching, refetch } = useQuery(
     ['users', page],
-    () => fetchUsers(page),
+    () => fetchUsers(page, { "email": usernameFilter, "role": role, "group": group }),
     { keepPreviousData: false, staleTime: 5000 }
   )
 
@@ -72,7 +74,8 @@ export default function Users() {
     setShowCreate(true);
   }
 
-  const updateGroupHandler = (id) => {
+  const updateUserHandler = (e, id) => {
+    e.preventDefault();
     setUpdateId(id);
     setShowUpdate(true);
   }
@@ -94,12 +97,6 @@ export default function Users() {
   useEffect(() => {
     global.update({ ...global, ...{ pageTitle: "Users" } });
   }, []);
-
-  useEffect(() => {
-    if (data && data.meta && data.meta.current_page && (data.meta.current_page > data.meta.num_pages)) {
-      setPage(data.meta.num_pages);
-    }
-  }, [data, page]);
 
   useEffect(() => {
     refetch();
@@ -144,7 +141,7 @@ export default function Users() {
                   })}
                   <td width="250px" align="center">
                     <a href="#" className="btn btn-outline-primary btn-sm">Password Reset</a>&nbsp;
-                    <a href="#" className="btn btn-outline-primary btn-sm" onClick={() => { updateGroupHandler(dataIndex) }}>Edit</a>&nbsp;
+                    <a href="#" className="btn btn-outline-primary btn-sm" onClick={(e) => { updateUserHandler(e, d.id) }}>Edit</a>&nbsp;
                     <a className="btn btn-outline-danger btn-sm" onClick={() => { deleteUserHandler(d.id) }}>Delete</a>
                   </td>
                 </tr>
@@ -171,7 +168,7 @@ export default function Users() {
       ) : null}
 
       <CreateUser show={showCreate} setShow={setShowCreate} refetch={refetch} />
-      {/* <UpdateUser id={updateId} show={showUpdate} setShow={setShowUpdate} data={sampleData} /> */}
+      <UpdateUser id={updateId} show={showUpdate} setShow={setShowUpdate} refetch={refetch} />
       <Confirm show={showDeleteConfirmation} setShow={setShowDeleteConfirmation} callback={deleteUserCallback} />
     </div>
   )
