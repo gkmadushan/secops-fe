@@ -12,30 +12,35 @@ import Axios from '../../hooks/useApi';
 import Confirm from "../../components/input/Confirm";
 import CheckboxV1 from "../../components/input/CheckboxV1";
 import SelectV1 from "../../components/input/SelectV1";
-import CreateEnvironment from "../../components/forms/CreateEnvironment";
-import UpdateEnvironment from "../../components/forms/UpdateEnvironment";
+import CreateResource from "../../components/forms/CreateResource";
+import UpdateResource from "../../components/forms/UpdateResource";
 
-async function getGroups() {
-  const { data } = await Axios.get('/v1/groups?limit=' + 100);
+async function getEnvironments() {
+  const { data } = await Axios.get('/v1/environments?limit=' + 100);
   return data.data;
 }
 
-async function fetchEnvironments(page = 1, requestParams = []) {
+async function getResourceTypes() {
+  const { data } = await Axios.get('/v1/resources/resource-types?limit=' + 100);
+  return data.data;
+}
+
+async function fetchResources(page = 1, requestParams = []) {
   const queryString = qs.stringify(requestParams);
-  const { data } = await Axios.get('/v1/environments?page=' + page + '&' + queryString)
+  const { data } = await Axios.get('/v1/resources?page=' + page + '&' + queryString)
   return data;
 }
 
-async function deleteEnvironment(id, callback) {
-  const { data } = await Axios.delete('/v1/environments/' + id)
+async function deleteResource(id, callback) {
+  const { data } = await Axios.delete('/v1/resources/' + id)
   callback();
   return data;
 }
 
-const tdConfig = { index: { align: 'right', width: '30px' }, name: { align: 'left' }, scan_start_time: { align: 'left', width: '50px' }, scan_terminate_time: { align: 'left', width: '50px' }, active: { align: 'center', width: '50px' } }
-const headings = { index: '#', name: 'Name', scan_start_time: 'Scan Start', scan_terminate_time: 'Scan Terminate', active: 'Active' }
+const tdConfig = { index: { align: 'right', width: '30px' }, name: { align: 'left' }, ipv4: { align: 'left', width: '50px' }, ipv6: { align: 'left', width: '50px' }, active: { align: 'center', width: '50px' } }
+const headings = { index: '#', name: 'Name', ipv4: 'IPV4', ipv6: 'IPV6', active: 'Active' }
 
-export default function Environments() {
+export default function Resources() {
   const global = useContext(GlobalContext);
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState(null);
@@ -43,21 +48,32 @@ export default function Environments() {
   const [showUpdate, setShowUpdate] = useState(false);
   const [updateId, setUpdateId] = useState(null);
   const [page, setPage] = useState(1);
-  const [nameFilter, setNameFilter] = useState("");
   const [deleteId, setDeleteId] = useState(null);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [group, setGroup] = useState(null);
-  const [statusFilter, setStatusFilter] = useState(false)
+  const [nameFilter, setNameFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState(true);
+  const [ipv4Filter, setIpv4Filter] = useState("");
+  const [ipv6Filter, setIpv6Filter] = useState("");
+  const [resourceTypeFilter, setResourceTypeFilter] = useState(null);
+  const [environment, setEnvironment] = useState(null);
+  const [resourceType, setResourceType] = useState(null);
 
   const { status, data, error, isFetching, refetch } = useQuery(
-    ['environments', page],
-    () => fetchEnvironments(page, { "name": nameFilter, "status": statusFilter, "group": group }),
+    ['resources', page],
+    () => fetchResources(page, { "name": nameFilter, "status": statusFilter, "environment": environment, "resource_type": resourceType, "ipv4": ipv4Filter, "ipv6": ipv6Filter, "resource_type": resourceTypeFilter }),
     { keepPreviousData: false, staleTime: 5000 }
   )
 
-  const { data: groupOptions } = useQuery(
-    ['groups'],
-    () => getGroups(),
+  const { data: environmentOptions } = useQuery(
+    ['environments'],
+    () => getEnvironments(),
+    { staleTime: 5000 }
+  )
+
+  const { data: resourceTypeOptions } = useQuery(
+    ['resourcetypes'],
+    () => getResourceTypes(),
     { staleTime: 5000 }
   )
 
@@ -77,7 +93,7 @@ export default function Environments() {
   }
 
   const deleteEnvironmentCallback = () => {
-    toast.promise(deleteEnvironment(deleteId, refetch), {
+    toast.promise(deleteResource(deleteId, refetch), {
       pending: 'Processing',
       success: { render({ data }) { return `Success ${data}` } },
       error: 'Error'
@@ -86,31 +102,36 @@ export default function Environments() {
   }
 
   useEffect(() => {
-    global.update({ ...global, ...{ pageTitle: "Software Environments" } });
+    global.update({ ...global, ...{ pageTitle: "Resources" } });
   }, []);
 
   useEffect(() => {
     refetch();
-  }, [nameFilter, group, statusFilter]);
+  }, [nameFilter, environment, statusFilter, resourceType, ipv4Filter, ipv6Filter, resourceTypeFilter]);
 
   return (
     <div>
-      <h4>List of Software Environments <FontAwesomeIcon icon={['fas', 'network-wired']} fixedWidth /></h4> <pre>Environment Management functions.</pre>
+      <h4>List of Resources <FontAwesomeIcon icon={['fas', 'server']} fixedWidth /></h4> <pre>Resource Management functions.</pre>
       <div className="row">
         <div className="col-md-6">
           <h6>Filter by</h6>
           <InputV1 label="Name" value={nameFilter} setValue={setNameFilter} />
-          {groupOptions ?
-            <SelectV1 label="Group" values={groupOptions} value={group} setValue={setGroup} /> : null}
+          <InputV1 label="IPv4" value={ipv4Filter} setValue={setIpv4Filter} />
+          <InputV1 label="IPv6" value={ipv6Filter} setValue={setIpv6Filter} />
+
+          {resourceTypeOptions ?
+            <SelectV1 label="Resource type" values={resourceTypeOptions} value={resourceTypeFilter} setValue={setResourceTypeFilter} /> : null}
+          {environmentOptions ?
+            <SelectV1 label="Environments" values={environmentOptions} value={environment} setValue={setEnvironment} /> : null}
           <CheckboxV1 label="Filter active items " value={statusFilter} setValue={setStatusFilter} />
         </div>
         <div className="col-md-6">
           <h6>Actions</h6>
-          <ButtonV1 onClick={createGroupHandler} label="Create New Environment" shortcut="Ctrl + Shift + C" />
+          <ButtonV1 onClick={createGroupHandler} label="Create New Resource" shortcut="Ctrl + Shift + C" />
         </div>
       </div>
       <table className="table table-hover table-bordered">
-        <caption>List of environments</caption>
+        <caption>List of resources</caption>
         <thead>
           <tr key="heading">
             {Object.keys(headings).map((key) => {
@@ -126,7 +147,11 @@ export default function Environments() {
               return (
                 <tr key={dataIndex}>
                   {Object.keys(headings).map((key) => {
-                    return <td key={dataIndex + "_" + key} width={tdConfig[key] ? tdConfig[key].width : null} align={tdConfig[key] ? tdConfig[key].align : null}>{typeof d[key] === 'object' ? d[key][tdConfig[key]['key']] : d[key]}</td>
+                    try {
+                      return <td key={dataIndex + "_" + key} width={tdConfig[key] ? tdConfig[key].width : null} align={tdConfig[key] ? tdConfig[key].align : null}>{typeof d[key] === 'object' ? d[key][tdConfig[key]['key']] : d[key]}</td>
+                    } catch {
+                      return <td key={dataIndex + "_" + key} width={tdConfig[key] ? tdConfig[key].width : null} align={tdConfig[key] ? tdConfig[key].align : null}></td>
+                    }
                   })}
                   <td width="250px" align="center">
                     <a href="#" className="btn btn-outline-primary btn-sm" onClick={(e) => { updateEnvironmentHandler(e, d.id) }}>Edit</a>&nbsp;
@@ -155,14 +180,14 @@ export default function Environments() {
         <Pagination num_pages={data.meta.num_pages} current_page={page} setPage={setPage} />
       ) : null}
 
-      <CreateEnvironment show={showCreateGroup} setShow={setShowCreateGroup} refetch={refetch} />
-      <UpdateEnvironment id={updateId} show={showUpdate} setShow={setShowUpdate} refetch={refetch} />
+      <CreateResource show={showCreateGroup} setShow={setShowCreateGroup} refetch={refetch} />
+      <UpdateResource id={updateId} show={showUpdate} setShow={setShowUpdate} refetch={refetch} />
       <Confirm show={showDeleteConfirmation} setShow={setShowDeleteConfirmation} callback={deleteEnvironmentCallback} />
     </div>
   )
 }
 
-Environments.getLayout = function getLayout(page) {
+Resources.getLayout = function getLayout(page) {
   return (
     <>
       <Layout>

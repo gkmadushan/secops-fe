@@ -8,7 +8,7 @@ import Axios from '../../hooks/useApi';
 import { useQuery } from "react-query";
 
 async function updateUser(id, request, refetch = null, refetchDetails = null) {
-    const { data } = await Axios.put('user-service/v1/users/' + id, request);
+    const { data } = await Axios.put('/v1/users/' + id, request);
     if (refetch !== null) {
         refetch();
     }
@@ -19,17 +19,17 @@ async function updateUser(id, request, refetch = null, refetchDetails = null) {
 }
 
 async function getGroups() {
-    const { data } = await Axios.get('user-service/v1/groups?limit=' + 100);
+    const { data } = await Axios.get('v1/groups?limit=' + 100);
     return data.data;
 }
 
 async function getRoles() {
-    const { data } = await Axios.get('user-service/v1/roles?limit=' + 100);
+    const { data } = await Axios.get('/v1/roles?limit=' + 100);
     return data.data;
 }
 
 async function getUser(id, setEmail, setName, setRole, setGroups) {
-    const { data } = await Axios.get('user-service/v1/users/' + id);
+    const { data } = await Axios.get('/v1/users/' + id);
     if (data && data.data) {
         if (data.data.email) {
             setEmail(data.data.email)

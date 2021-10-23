@@ -8,7 +8,7 @@ import Axios from '../../hooks/useApi';
 import { useQuery } from "react-query";
 
 async function createUser(request, refetch = null) {
-    const { data } = await Axios.post('user-service/v1/users', request);
+    const { data } = await Axios.post('/v1/users', request);
     if (refetch !== null) {
         refetch();
     }
@@ -16,12 +16,12 @@ async function createUser(request, refetch = null) {
 }
 
 async function getGroups() {
-    const { data } = await Axios.get('user-service/v1/groups?limit=' + 100);
+    const { data } = await Axios.get('/v1/groups?limit=' + 100);
     return data.data;
 }
 
 async function getRoles() {
-    const { data } = await Axios.get('user-service/v1/roles?limit=' + 100);
+    const { data } = await Axios.get('/v1/roles?limit=' + 100);
     return data.data;
 }
 

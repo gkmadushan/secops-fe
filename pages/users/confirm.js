@@ -29,7 +29,7 @@ export default function Confirm() {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [otp, setOTP] = useState("")
 
-    const { data: qrResponse, isFetching } = useQuery(
+    const { data: qrResponse, isFetching, error, status } = useQuery(
         ['qr'],
         () => getQR(),
         { refetchOnMount: true }
@@ -42,6 +42,11 @@ export default function Confirm() {
             success: { render() { setTimeout(() => { window.location.href = '/login' }, 1000); return `Password updated, Redirecting to Login` } },
             error: { render() { return `Failed to save password, Invalid OTP` } },
         });
+    }
+
+
+    if (error) {
+        return <><h1 className="mt-m">Invalid or Expired Password Reset URL </h1></>
     }
 
     return (

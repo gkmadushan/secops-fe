@@ -15,7 +15,7 @@ function index({ children }) {
     if (loginStatus === 'TRUE') {
       global.update({ ...global, ...{ loggedIn: true } });
     } else {
-      router.push('/login')
+      // router.push('/login')
     }
   }, [])
 

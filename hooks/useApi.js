@@ -12,6 +12,7 @@ Axios.interceptors.response.use(
             error.response.status === 401
         ) {
             //@todo refresh token and if not working only redirect to login
+            alert('test');
             window.location.href = process.env.BASE_URL + '/login';
         }
 
