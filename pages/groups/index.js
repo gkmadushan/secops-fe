@@ -25,6 +25,7 @@ async function deleteGroup(id, callback) {
   return data;
 }
 
+
 const tdConfig = { index: { align: 'right', width: '30px' }, name: { align: 'left' }, num_users: { align: 'center', width: '50px' }, num_envs: { align: 'center', width: '50px' } }
 const headings = { index: '#', name: 'Name', num_users: 'Number of Users', num_envs: 'Number of Environments' }
 
