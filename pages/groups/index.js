@@ -47,7 +47,6 @@ export default function Groups() {
     { keepPreviousData: false, staleTime: 5000 }
   )
 
-
   const createGroupHandler = () => {
     setShowCreateGroup(true);
   }

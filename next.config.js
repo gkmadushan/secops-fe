@@ -8,7 +8,7 @@ module.exports = {
       { name: 'Environments', uri: '/environments', icon: 'network-wired' },
       { name: 'Resources', uri: '/environments/resources', icon: 'server' },
       { name: 'Inventory', uri: '/inventory', icon: 'code' },
-      { name: 'Issues', uri: '/dashboard4', icon: 'exclamation' },
+      { name: 'Issues', uri: '/issues', icon: 'exclamation' },
       { name: 'Knowledge Base', uri: '/dashboard5', icon: 'university' }
     ],
     API_URL: 'http://localhost:8088/experience-service',

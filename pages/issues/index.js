@@ -8,29 +8,60 @@ import { useQuery } from "react-query";
 import qs from 'qs';
 import Axios from '../../hooks/useApi';
 import ViewInventoryVarient from "../../components/forms/ViewInventoryVarients";
+import SelectV1 from "../../components/input/SelectV1";
 
-async function fetchInventoryItems(page = 1, requestParams = []) {
+async function fetchIssues(page = 1, requestParams = []) {
     const queryString = qs.stringify(requestParams);
-    const { data } = await Axios.get('/v1/inventory?page=' + page + '&' + queryString)
+    const { data } = await Axios.get('/v1/issues?page=' + page + '&' + queryString)
     return data;
 }
 
-const tdConfig = { index: { align: 'right', width: '30px' }, name: { align: 'left' }, code: { align: 'center', width: '100px' }, vendor: { align: 'center' }, contact: { align: 'center', width: '100px' } }
-const headings = { index: '#', name: 'Name', code: 'CPE/Code', vendor: 'Vendor', contact: 'Contact' }
+async function getResources() {
+    const { data } = await Axios.get('/v1/resources?limit=' + 100);
+    return data.data;
+}
 
-export default function Inventory() {
+async function getStatusOptions() {
+    const { data } = await Axios.get('/v1/issues/issue-status?limit=' + 100);
+    return data.data;
+}
+
+const tdConfig = { index: { align: 'right', width: '30px' }, name: { align: 'left' }, code: { align: 'center', width: '100px' }, vendor: { align: 'center' }, contact: { align: 'center', width: '100px' } }
+const headings = { index: '#', title: 'Title', score: 'CVSS Score', cve: 'CVE Number', detected_at: 'Detected Date/Time', false_positive: 'False Positive', resolved_at: 'Resolved Date/Time' }
+
+export default function Issues() {
     const global = useContext(GlobalContext);
     const [page, setPage] = useState(1);
-    const [nameFilter, setNameFilter] = useState("");
-    const [codeFilter, setCodeFilter] = useState("");
+    const [titleFilter, setTitleFilter] = useState("");
+    const [statusFilter, setStatusFilter] = useState(null);
     const [vendorFilter, setVendorFilter] = useState("");
+    const [resourceFilter, setResourceFilter] = useState(null);
+    const [issueIdFilter, setIssueIdFilter] = useState(null);
+    const [falsePositiveFilter, setFalsePositiveFilter] = useState(null);
+    const [scriptAvailableFilter, setScriptAvailableFilter] = useState(null);
+    const [detectedAtFromFilter, setDetectedAtFromFilter] = useState("");
+    const [detectedAtToFilter, setDetectedAtToFilter] = useState("");
+    const [resolvedAtFromFilter, setResolvedAtFromFilter] = useState("");
+    const [resolvedAtToFilter, setResolvedAtToFilter] = useState("");
     const [show, setShow] = useState(false);
     const [id, setId] = useState(null);
 
     const { status, data, error, isFetching, refetch } = useQuery(
         ['inventoryitems', page],
-        () => fetchInventoryItems(page, { "name": nameFilter, "code": codeFilter, "vendor": vendorFilter }),
+        () => fetchIssues(page, { "title": titleFilter, "resource": resourceFilter, "issue_status": statusFilter, "issue_id": issueIdFilter, "script_available": scriptAvailableFilter, "false_positive": falsePositiveFilter, "detected_at_from": detectedAtFromFilter, "detected_at_to": detectedAtToFilter, "resolved_at_from": resolvedAtFromFilter, "resolved_at_to": resolvedAtToFilter }),
         { keepPreviousData: false, staleTime: 5000 }
+    )
+
+    const { data: resourceOptions } = useQuery(
+        ['resources'],
+        () => getResources(),
+        { staleTime: 5000 }
+    )
+
+    const { data: statusOptions } = useQuery(
+        ['issue-status'],
+        () => getStatusOptions(),
+        { staleTime: 5000 }
     )
 
     const viewInventoryVarientHandler = (id, e) => {
@@ -40,27 +71,36 @@ export default function Inventory() {
     }
 
     useEffect(() => {
-        global.update({ ...global, ...{ pageTitle: "Software Inventory" } });
+        global.update({ ...global, ...{ pageTitle: "Issues" } });
     }, []);
 
     useEffect(() => {
         refetch();
-    }, [nameFilter, codeFilter, vendorFilter]);
+    }, [titleFilter]);
 
     return (
         <div>
-            <h4>Software Inventory <FontAwesomeIcon icon={['fas', 'users']} fixedWidth /></h4> <pre>Inventory Query functions.</pre>
+            <h4>Issues <FontAwesomeIcon icon={['fas', 'users']} fixedWidth /></h4> <pre>Issue Query functions.</pre>
             <div className="row">
                 <div className="col-md-6">
                     <h6>Filter by</h6>
-                    <InputV1 label="Software Name" value={nameFilter} setValue={setNameFilter} />
-                    <InputV1 label="CPE / Code" value={codeFilter} setValue={setCodeFilter} />
-                    <InputV1 label="Vendor Name" value={vendorFilter} setValue={setVendorFilter} />
+                    <InputV1 label="Title" value={titleFilter} setValue={setTitleFilter} />
+                    {resourceOptions ?
+                        <SelectV1 label="Resource" values={resourceOptions} value={resourceFilter} setValue={setResourceFilter} /> : null}
+                    {statusOptions ?
+                        <SelectV1 label="Status" values={statusOptions} value={statusFilter} setValue={setStatusFilter} /> : null}
+                    <SelectV1 label="Script Available" values={[{ "id": "", "name": "Any" }, { "id": "0", "name": "Not Available" }, { "id": "1", "name": "Available" }]} value={scriptAvailableFilter} setValue={setScriptAvailableFilter} />
+                    <SelectV1 label="False Positive" values={[{ "id": "", "name": "Any" }, { "id": "0", "name": "Not Available" }, { "id": "1", "name": "Available" }]} value={falsePositiveFilter} setValue={setFalsePositiveFilter} />
+
+
                 </div>
-                {/* <div className="col-md-6">
-                    <h6>Actions</h6>
-                    <ButtonV1 onClick={createGroupHandler} label="Create New Group" shortcut="Ctrl + Shift + C" />
-                </div> */}
+                <div className="col-md-6">
+                    <h6>&nbsp;</h6>
+                    <InputV1 type="date" label="Detected Date (From)" value={detectedAtFromFilter} setValue={setDetectedAtFromFilter} />
+                    <InputV1 type="date" label="Detected Date (To)" value={detectedAtToFilter} setValue={setDetectedAtToFilter} />
+                    <InputV1 type="date" label="Resolved Date (From)" value={resolvedAtFromFilter} setValue={setResolvedAtFromFilter} />
+                    <InputV1 type="date" label="Resolved Date (To)" value={resolvedAtToFilter} setValue={setResolvedAtToFilter} />
+                </div>
             </div>
             <table className="table table-hover table-bordered">
                 <caption>List of Software components</caption>
@@ -112,7 +152,7 @@ export default function Inventory() {
     )
 }
 
-Inventory.getLayout = function getLayout(page) {
+Issues.getLayout = function getLayout(page) {
     return (
         <>
             <Layout>

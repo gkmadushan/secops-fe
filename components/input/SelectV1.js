@@ -15,7 +15,6 @@ function SelectV1({ label, shortcut, required = false, validationError = false, 
     const handleChange = (e) => {
         setValue(e.target.value);
     }
-    console.log('SELECT', value)
     return (
         <div className="input-group mb-3">
             <div className="input-group">
