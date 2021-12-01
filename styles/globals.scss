@@ -140,3 +140,91 @@ nav{
 .mt-m{
   margin-top:30vh;
 }
+
+.required{
+  color:red;
+}
+
+.mr-2{
+  margin-right: 10px;
+}
+
+.green-label{
+  color:white;
+  background: green;
+  padding:5px 12px;
+  border-radius: 5px
+}
+
+.data-table{
+  padding: 10px;
+  margin-bottom: 10px;
+  tr, th, td{
+    border: 1px solid gray;
+    border-collapse: collapse;
+    padding:10px;
+  }
+  td{
+    font-family: 'Courier New', Courier, monospace;
+    font-size:14px;
+  }
+}
+
+.orange{
+  background:orange;
+  border:1px solid black;
+  width:100px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.blue{
+  background:lightblue;
+  border:1px solid black;
+  width:100px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.red{
+  background:red;
+  border:1px solid black;
+  color:white;
+  width:100px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.default{
+  background:gray;
+  border:1px solid black;
+  color:white;
+  width:100px;
+  text-align: center;
+  font-weight: bold;
+}
+
+textarea{
+  width:100%;
+  border:1px solid #ced4da;
+}
+
+.action-history{
+  height:80vh;
+  overflow: auto;
+  border:1px solid lightgray;
+  padding-top: 0;
+  h6{
+    position:sticky;
+    top:0px;
+    background:white;
+    padding:10px 0;
+    z-index:8888;
+  }
+}
+
+.wysiwyg{
+  height:500px;
+  margin-bottom:50px;
+  clear: both;
+}

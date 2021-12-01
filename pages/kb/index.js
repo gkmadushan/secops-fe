@@ -13,34 +13,24 @@ import qs from "qs";
 import Axios from "../../hooks/useApi";
 import Confirm from "../../components/input/Confirm";
 
-async function fetchGroups(page = 1, requestParams = []) {
+async function fetch(page = 1, requestParams = []) {
   const queryString = qs.stringify(requestParams);
   const { data } = await Axios.get(
-    "/v1/groups?page=" + page + "&" + queryString
+    "/v1/lessons?page=" + page + "&" + queryString
   );
-  return data;
-}
-
-async function deleteGroup(id, callback) {
-  const { data } = await Axios.delete("/v1/groups/" + id);
-  callback();
   return data;
 }
 
 const tdConfig = {
   index: { align: "right", width: "30px" },
-  name: { align: "left" },
-  num_users: { align: "center", width: "50px" },
-  num_envs: { align: "center", width: "50px" },
+  title: { align: "left" },
 };
 const headings = {
   index: "#",
-  name: "Name",
-  num_users: "Number of Users",
-  num_envs: "Number of Environments",
+  title: "Title",
 };
 
-export default function Groups() {
+export default function KnowledgeBase() {
   const global = useContext(GlobalContext);
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState(null);
@@ -53,46 +43,14 @@ export default function Groups() {
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
 
   const { status, data, error, isFetching, refetch } = useQuery(
-    ["groups", page],
-    () => fetchGroups(page, { group: nameFilter }),
+    ["kb", page],
+    () => fetch(page, { ref: nameFilter }),
     { keepPreviousData: false, staleTime: 5000 }
   );
 
-  const createGroupHandler = () => {
-    setShowCreateGroup(true);
-  };
-
-  const updateGroupHandler = (e, id) => {
-    e.preventDefault();
-    setUpdateId(id);
-    setShowUpdate(true);
-  };
-
-  const deleteGroupHandler = (id) => {
-    setDeleteId(id);
-    setShowDeleteConfirmation(true);
-  };
-
-  const deleteGroupCallback = () => {
-    toast.promise(deleteGroup(deleteId, refetch), {
-      pending: "Processing",
-      success: {
-        render({ data }) {
-          return `Success ${data}`;
-        },
-      },
-      error: "Error",
-    });
-    setShowDeleteConfirmation(false);
-  };
-
   useEffect(() => {
-    global.update({ ...global, ...{ pageTitle: "Groups" } });
+    global.update({ ...global, ...{ pageTitle: "Lessons Learnt Reports" } });
   }, []);
-
-  useEffect(() => {
-    refetch();
-  }, [nameFilter]);
 
   const limit = process.env.LIMIT;
   const total =
@@ -100,29 +58,25 @@ export default function Groups() {
   const current_page =
     data && data.meta && data.meta.current_page ? data.meta.current_page : 1;
 
+  console.log(data);
+
   return (
     <div>
       <h4>
-        List of Groups <FontAwesomeIcon icon={["fas", "users"]} fixedWidth />
-      </h4>{" "}
-      <pre>Group Management functions.</pre>
+        List of Lessons Learnt Report
+        <FontAwesomeIcon icon={["fas", "university"]} fixedWidth />
+      </h4>
+      <pre>Lessons Learnt Reports.</pre>
       <div className="row">
         <div className="col-md-6">
           <h6>Filter by</h6>
           <InputV1
-            label="Group Name"
+            label="Reference ID"
             value={nameFilter}
             setValue={setNameFilter}
           />
         </div>
-        <div className="col-md-6">
-          <h6>Actions</h6>
-          <ButtonV1
-            onClick={createGroupHandler}
-            label="Create New Group"
-            shortcut="Ctrl + Shift + C"
-          />
-        </div>
+        <div className="col-md-6"></div>
       </div>
       <table className="table table-hover table-bordered">
         <caption>
@@ -151,38 +105,18 @@ export default function Groups() {
               return (
                 <tr key={dataIndex}>
                   {Object.keys(headings).map((key) => {
+                    console.log("DEBUG", headings);
                     return (
                       <td
                         key={dataIndex + "_" + key}
                         width={tdConfig[key] ? tdConfig[key].width : null}
                         align={tdConfig[key] ? tdConfig[key].align : null}
                       >
-                        {typeof d[key] === "object"
-                          ? d[key][tdConfig[key]["key"]]
-                          : d[key]}
+                        {d[key]}
                       </td>
                     );
                   })}
-                  <td width="250px" align="center">
-                    <a
-                      href="#"
-                      className="btn btn-outline-primary btn-sm"
-                      onClick={(e) => {
-                        updateGroupHandler(e, d.id);
-                      }}
-                    >
-                      Edit
-                    </a>
-                    &nbsp;
-                    <a
-                      className="btn btn-outline-danger btn-sm"
-                      onClick={() => {
-                        deleteGroupHandler(d.id);
-                      }}
-                    >
-                      Delete
-                    </a>
-                  </td>
+                  <td width="250px" align="center"></td>
                 </tr>
               );
             })}
@@ -215,27 +149,17 @@ export default function Groups() {
           setPage={setPage}
         />
       ) : null}
-      <CreateGroup
-        show={showCreateGroup}
-        setShow={setShowCreateGroup}
-        refetch={refetch}
-      />
-      <UpdateGroup
+      {/* <UpdateGroup
         id={updateId}
         show={showUpdate}
         setShow={setShowUpdate}
         refetch={refetch}
-      />
-      <Confirm
-        show={showDeleteConfirmation}
-        setShow={setShowDeleteConfirmation}
-        callback={deleteGroupCallback}
-      />
+      /> */}
     </div>
   );
 }
 
-Groups.getLayout = function getLayout(page) {
+KnowledgeBase.getLayout = function getLayout(page) {
   return (
     <>
       <Layout>{page}</Layout>
