@@ -12,6 +12,7 @@ import { useQuery } from "react-query";
 import qs from "qs";
 import Axios from "../../hooks/useApi";
 import Confirm from "../../components/input/Confirm";
+import ViewLessonsReport from "../../components/forms/ViewLessonsReport";
 
 async function fetch(page = 1, requestParams = []) {
   const queryString = qs.stringify(requestParams);
@@ -32,6 +33,7 @@ const headings = {
 
 export default function KnowledgeBase() {
   const global = useContext(GlobalContext);
+  const [id, setId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState(null);
   const [showCreateGroup, setShowCreateGroup] = useState(false);
@@ -41,12 +43,20 @@ export default function KnowledgeBase() {
   const [nameFilter, setNameFilter] = useState("");
   const [deleteId, setDeleteId] = useState(null);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [show, setShow] = useState(false);
 
   const { status, data, error, isFetching, refetch } = useQuery(
     ["kb", page],
     () => fetch(page, { ref: nameFilter }),
     { keepPreviousData: false, staleTime: 5000 }
   );
+
+  const viewIssueHandler = (id, e) => {
+    e.preventDefault();
+    setId(id);
+    setShow(true);
+    console.log(id, show);
+  };
 
   useEffect(() => {
     global.update({ ...global, ...{ pageTitle: "Lessons Learnt Reports" } });
@@ -63,7 +73,7 @@ export default function KnowledgeBase() {
   return (
     <div>
       <h4>
-        List of Lessons Learnt Report
+        List of Lessons Learnt Reports
         <FontAwesomeIcon icon={["fas", "university"]} fixedWidth />
       </h4>
       <pre>Lessons Learnt Reports.</pre>
@@ -116,7 +126,17 @@ export default function KnowledgeBase() {
                       </td>
                     );
                   })}
-                  <td width="250px" align="center"></td>
+                  <td width="250px" align="center">
+                    <a
+                      href="#"
+                      className="btn btn-outline-primary btn-sm mr-2"
+                      onClick={(e) => {
+                        viewIssueHandler(d.id, e);
+                      }}
+                    >
+                      View
+                    </a>
+                  </td>
                 </tr>
               );
             })}
@@ -149,12 +169,14 @@ export default function KnowledgeBase() {
           setPage={setPage}
         />
       ) : null}
-      {/* <UpdateGroup
-        id={updateId}
-        show={showUpdate}
-        setShow={setShowUpdate}
-        refetch={refetch}
-      /> */}
+      {id ? (
+        <ViewLessonsReport
+          id={id}
+          show={show}
+          setShow={setShow}
+          refetch={refetch}
+        />
+      ) : null}
     </div>
   );
 }

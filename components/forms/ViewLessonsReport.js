@@ -14,20 +14,8 @@ const QuillNoSSRWrapper = dynamic(import("react-quill"), {
   loading: () => <p>Loading ...</p>,
 });
 
-async function getIssue(id) {
-  const { data } = await Axios.get("/v1/issues/" + id);
-  return data.data;
-}
-
-async function getActionTypes() {
-  const { data } = await Axios.get("/v1/action-types?limit=" + 100);
-  return data.data;
-}
-
-async function getActionHistory(id) {
-  const { data } = await Axios.get(
-    "/v1/issue-actions?limit=" + 100 + "&issue_id=" + id
-  );
+async function getReport(id) {
+  const { data } = await Axios.get("/v1/lessons/" + id);
   return data.data;
 }
 
@@ -39,46 +27,29 @@ async function submitAction(id, request, refetch = null) {
   return data;
 }
 
-function LessonsReport({ id, title, ref, show, setShow, refetch = null }) {
+function ViewLessonsReport({ id, show, setShow, refetch = null }) {
   const [report, setReport] = useState(
     "<h1>Lessons Learnt Report</h1><br/>Prepared by : .....<br/><br/><h3><strong>Problem Statement</strong></h3><p>.....<br/><br/></p><h3><strong>Steps to Fix</strong></h3><li>Step 1</li><li>Step 2</li><br/><br/><br/><br/><h3><strong>Links</strong></h3>"
   );
-  const [titleState, setTitleState] = useState(title);
+  const [titleState, setTitleState] = useState("");
 
-  const { data: actionHistory, refetch: refetchHistory } = useQuery(
-    ["actionhistory" + id],
-    () => getActionHistory(id),
+  const { data: reportData, refetch: refetchReport } = useQuery(
+    ["report" + id],
+    () => getReport(id),
     {
       staleTime: 10,
     }
   );
 
-  const handleSubmitAction = (e) => {
-    e.preventDefault();
-    let request = {
-      issue_id: id,
-      title: titleState,
-      description: report,
-      ref: issue.issue_id_raw,
-    };
-    submitAction(id, request, refetch);
-    setShow(false);
-    setTimeout(() => refetchHistory(), 2000);
-  };
-
-  const { data: issue } = useQuery(["issues" + id], () => getIssue(id), {
-    staleTime: 5000,
-  });
-
   const handleChange = (content, delta, source, editor) => {
     setReport(editor.getHTML());
   };
 
-  if (issue) {
+  if (reportData) {
     return (
       <Modal
         show={show}
-        fullscreen={true}
+        fullscreen={false}
         onHide={() => setShow(false)}
         size="lg"
       >
@@ -87,9 +58,9 @@ function LessonsReport({ id, title, ref, show, setShow, refetch = null }) {
         </Modal.Header>
         <Modal.Body>
           <div class="row">
-            <div className="col-md-6">
+            <div className="col-md-12">
               <h6>Issue ID</h6>
-              <p>
+              {/* <p>
                 {issue.issue_id.map((id) => (
                   <li>
                     {id.type} -{" "}
@@ -98,53 +69,26 @@ function LessonsReport({ id, title, ref, show, setShow, refetch = null }) {
                     </a>
                   </li>
                 ))}
-              </p>
+              </p> */}
               <p>
                 Title :{" "}
                 <InputV1
+                  readonly
                   label="Title"
-                  value={titleState}
+                  value={reportData.title}
                   setValue={setTitleState}
                 />
               </p>
               <p>
                 Notes{" "}
                 <QuillNoSSRWrapper
-                  value={report}
+                  value={reportData.description}
+                  readOnly={true}
                   theme="snow"
                   className="wysiwyg"
                   onChange={handleChange}
                 />
               </p>
-              <input
-                className="btn btn-primary btn-sm mr-2"
-                onClick={(e) => handleSubmitAction(e)}
-                type="button"
-                value="Save Report"
-              />
-            </div>
-            <div className="col-md-6 action-history">
-              <p className="text-primary">
-                <sub>
-                  History events are ordered according the descending order of
-                  the performed date/time
-                </sub>
-              </p>
-              <h6>Action History</h6>
-              {actionHistory &&
-                actionHistory.map((history, index) => (
-                  <>
-                    <i>{history.name}</i>
-                    <br />
-                    <label>
-                      <sup>
-                        user : {history.id} {history.created_at}
-                      </sup>
-                    </label>
-                    <p>{history.notes}</p>
-                    <hr />
-                  </>
-                ))}
             </div>
           </div>
         </Modal.Body>
@@ -155,4 +99,4 @@ function LessonsReport({ id, title, ref, show, setShow, refetch = null }) {
   }
 }
 
-export default LessonsReport;
+export default ViewLessonsReport;
