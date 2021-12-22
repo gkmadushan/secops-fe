@@ -15,6 +15,8 @@ import SelectV1 from "../../components/input/SelectV1";
 import CreateEnvironment from "../../components/forms/CreateEnvironment";
 import UpdateEnvironment from "../../components/forms/UpdateEnvironment";
 
+const API_URL = process.env.API_URL;
+
 async function getGroups() {
   const { data } = await Axios.get("/v1/groups?limit=" + 100);
   return data.data;
@@ -195,15 +197,21 @@ export default function Environments() {
                   })}
                   <td width="250px" align="center">
                     <a
+                      href={API_URL + "/v1/reports/environments/" + d.id}
+                      target="_blank"
+                      className="btn btn-outline-primary btn-sm mr-2"
+                    >
+                      Report
+                    </a>
+                    <a
                       href="#"
-                      className="btn btn-outline-primary btn-sm"
+                      className="btn btn-outline-primary btn-sm mr-2"
                       onClick={(e) => {
                         updateEnvironmentHandler(e, d.id);
                       }}
                     >
                       Edit
                     </a>
-                    &nbsp;
                     <a
                       className="btn btn-outline-danger btn-sm"
                       onClick={() => {

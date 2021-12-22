@@ -71,7 +71,6 @@ function ViewLessonsReport({ id, show, setShow, refetch = null }) {
                 ))}
               </p> */}
               <p>
-                Title :{" "}
                 <InputV1
                   readonly
                   label="Title"

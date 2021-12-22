@@ -10,6 +10,7 @@ function LeftNav() {
   const router = useRouter();
   const [menu, setMenu] = useState([]);
   const menuConfig = useRef(process.env.menuConfig);
+  const [user, setUser] = useState(null);
 
   function setActiveMenu() {
     let menuStructure = menuConfig.current;
@@ -34,22 +35,29 @@ function LeftNav() {
     setActiveMenu();
   }, [router]);
 
+  useEffect(() => {
+    setUser(JSON.parse(localStorage.getItem("userdata")));
+  }, []);
+
+  const userRole = user?.role;
+
   return (
     <div className={[styles.leftNav].join(" ")}>
       <ul>
-        {menu.length > 0
-          ? menu.map(({ name, uri, active, icon }) => {
-              return (
-                <li key={uri}>
-                  <Link href={uri}>
-                    <a className={active ? styles.active : null} uri={uri}>
-                      <FontAwesomeIcon icon={["fas", icon]} fixedWidth />
-                      {active && !global.menuState ? "|" : ""} {name}
-                    </a>
-                  </Link>
-                </li>
-              );
-            })
+        {menu.length > 0 && user.role
+          ? menu.map(
+              ({ name, uri, active, icon, role }) =>
+                role.includes(userRole) && (
+                  <li key={uri}>
+                    <Link href={uri}>
+                      <a className={active ? styles.active : null} uri={uri}>
+                        <FontAwesomeIcon icon={["fas", icon]} fixedWidth />
+                        {active && !global.menuState ? "|" : ""} {name}
+                      </a>
+                    </Link>
+                  </li>
+                )
+            )
           : null}
       </ul>
     </div>

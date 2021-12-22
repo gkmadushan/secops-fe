@@ -3,18 +3,29 @@ import Image from "next/image";
 import Link from "next/link";
 
 import Logo from "../assets/images/logo.png";
-import Menu from "../assets/images/menu.png";
-import HideMenu from "../assets/images/collapse.png";
+import { useRouter } from "next/router";
 import GlobalContext from "../utils/GlobalContext";
+import Axios from "../hooks/useApi";
+
+async function logout() {
+  await Axios.post("/oauth/revoke");
+}
 
 function Headers() {
   const global = useContext(GlobalContext);
+  const router = useRouter();
+
   const menuHandler = () => {
     global.update(
       ...{
         menuState: !global.menuState,
       }
     );
+  };
+
+  const handleLogout = (e) => {
+    logout();
+    router.push("/login");
   };
 
   return (
@@ -27,13 +38,14 @@ function Headers() {
       </Link>
       <div className="page-title d-none d-md-block">{global.pageTitle}</div>
       <div className="user-menu d-none d-sm-block">
-        <span>Logged in as Kasun</span>
+        <span>Logged in as {global?.user?.name}</span>
         <a href="#">
-          Inbox (<b>2</b>)
+          Inbox (
+          <b>{global && global.notifications ? global.notifications : 0}</b>)
         </a>
-        <Link href="/login">
-          <a href="#">Logout</a>
-        </Link>
+        <span className="pointer" onClick={(e) => handleLogout(e)}>
+          Logout
+        </span>
       </div>
     </header>
   );

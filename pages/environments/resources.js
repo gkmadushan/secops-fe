@@ -10,6 +10,7 @@ import { useQuery } from "react-query";
 import qs from "qs";
 import Axios from "../../hooks/useApi";
 import Confirm from "../../components/input/Confirm";
+import AdHocScan from "../../components/forms/AdHocScan";
 import CheckboxV1 from "../../components/input/CheckboxV1";
 import SelectV1 from "../../components/input/SelectV1";
 import CreateResource from "../../components/forms/CreateResource";
@@ -25,8 +26,8 @@ async function getResourceTypes() {
   return data.data;
 }
 
-async function scan(id, name) {
-  let request = {};
+async function scan(id, name, autofix) {
+  let request = { autofix: autofix };
 
   const { data, status, statusText } = await Axios.post(
     `/v1/resources/${id}/scan`,
@@ -140,8 +141,8 @@ export default function Resources() {
     setShowAdhocScanConfirmation(true);
   };
 
-  const adhocScanCallback = () => {
-    toast.promise(scan(scanId, resourceName), {
+  const adhocScanCallback = (autofix) => {
+    toast.promise(scan(scanId, resourceName, autofix), {
       pending: "Scanning resource '" + resourceName + "'",
       success: {
         render({ data }) {
@@ -362,7 +363,7 @@ export default function Resources() {
         setShow={setShowDeleteConfirmation}
         callback={deleteEnvironmentCallback}
       />
-      <Confirm
+      <AdHocScan
         show={showAdhocScanConfirmation}
         setShow={setShowAdhocScanConfirmation}
         callback={adhocScanCallback}
