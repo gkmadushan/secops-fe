@@ -6,14 +6,21 @@ function AdHocScan({ show, setShow, callback }) {
   const [autofix, setAutofix] = useState(false);
   const [normal, setNormal] = useState(false);
 
+  const handleHide = () => {
+    setShow(false);
+    setAutofix(false);
+    setNormal(false);
+  };
+
+  const handleClick = () => {
+    callback(autofix);
+    setAutofix(false);
+    setNormal(false);
+  };
+
   return (
     <div>
-      <Modal
-        show={show}
-        fullscreen={false}
-        onHide={() => setShow(false)}
-        size="md"
-      >
+      <Modal show={show} fullscreen={false} onHide={handleHide} size="md">
         <Modal.Header closeButton>
           <Modal.Title>Confirm AdHoc Scan</Modal.Title>
         </Modal.Header>
@@ -61,7 +68,7 @@ function AdHocScan({ show, setShow, callback }) {
               className="btn btn-danger mt-2"
               type="button"
               value="Confirm"
-              onClick={() => callback(autofix)}
+              onClick={handleClick}
             />
           )}
         </Modal.Body>

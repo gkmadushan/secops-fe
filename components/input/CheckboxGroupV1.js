@@ -5,7 +5,6 @@ function CheckboxGroupV1({ label, values, setValue, value }) {
     let options = [];
     if (values) {
       for (const option of values) {
-        console.log("VAL", option.id);
         if (value && value.filter((val) => val.id == option.id).length > 0) {
           options.push({ label: option.name, checked: true, id: option.id });
         } else {

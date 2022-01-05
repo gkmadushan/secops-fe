@@ -1,15 +1,10 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import BarChart from "../components/charts/BarChart";
 import Layout from "../layout";
 import GlobalContext from "../utils/GlobalContext";
 import { useQuery } from "react-query";
 import Axios from "../hooks/useApi";
-
-// const data = [
-//   { year: 1980, efficiency: 24.3, sales: 8949000 },
-//   { year: 1985, efficiency: 27.6, sales: 10979000 },
-//   { year: 1990, efficiency: 28, sales: 9303000 },
-// ];
+import Severity from "../components/common/Severity";
 
 async function fetchIssueSummaryDiagram() {
   const data = await Axios.get("/v1/issues/graphs");
@@ -21,8 +16,17 @@ async function fetchScanSummaryDiagram() {
   return data;
 }
 
+async function fetchCve() {
+  const data = await Axios.get("/v1/cve");
+  return data;
+}
+
 export default function Home() {
   const global = useContext(GlobalContext);
+
+  const { data: cveData } = useQuery(["cve"], () => fetchCve(), {
+    staleTime: 5000,
+  });
 
   const { data: issueSummaryDiagram } = useQuery(
     ["issue-summary-diagram"],
@@ -38,23 +42,47 @@ export default function Home() {
 
   useEffect(() => {
     global.update({ ...global, ...{ pageTitle: "Dashboard" } });
-    // fetchIssueSummaryDiagram();
   }, []);
 
   return (
-    <div className="row">
-      {issueSummaryDiagram &&
-        issueSummaryDiagram.data.map((diagram) => (
-          <div className="col-md-5">
-            <img src={"data:image/svg+xml;base64," + diagram} />
+    // <div className="row">
+    //   {issueSummaryDiagram &&
+    //     issueSummaryDiagram.data &&
+    //     issueSummaryDiagram.data.map((diagram) => (
+    //       <div className="col-md-5">
+    //         <img src={"data:image/svg+xml;base64," + diagram} />
+    //       </div>
+    //     ))}
+    //   {scanSummaryDiagram &&
+    //     scanSummaryDiagram?.data?.map((diagram) => (
+    //       <div className="col-md-10">
+    //         <img src={"data:image/svg+xml;base64," + diagram} />
+    //       </div>
+    //     ))}
+    // </div>
+    <div class="timeline">
+      {cveData?.data?.data?.map((cve, index) => (
+        <div
+          class={["container-tl ", index % 2 == 0 ? "left" : "right"].join(" ")}
+        >
+          <div class="content">
+            <h2>{cve.publish_date}</h2>
+            {cve?.list?.map((cveInfo) => (
+              <>
+                <h6>
+                  {cveInfo.cve} <Severity score={cveInfo.score} />
+                </h6>
+                <p>{cveInfo.description}</p>
+                <p>
+                  <a href={cveInfo.url} target="_blank">
+                    {cveInfo.url}
+                  </a>
+                </p>
+              </>
+            ))}
           </div>
-        ))}
-      {scanSummaryDiagram &&
-        scanSummaryDiagram.data.map((diagram) => (
-          <div className="col-md-10">
-            <img src={"data:image/svg+xml;base64," + diagram} />
-          </div>
-        ))}
+        </div>
+      ))}
     </div>
   );
 }

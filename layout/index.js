@@ -6,17 +6,22 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/router";
 
+const loadUser = async () => {
+  const userdata = await localStorage.getItem("userdata");
+  return JSON.parse(userdata);
+};
+
 function index({ children }) {
   const router = useRouter();
   const global = useContext(GlobalContext);
 
   useEffect(() => {
-    const loginStatus = localStorage.getItem("isLoggedIn");
-    if (loginStatus === "TRUE") {
-      global.update({ ...global, ...{ loggedIn: true } });
-    } else {
-      // router.push('/login')
-    }
+    loadUser().then((obj) =>
+      global.update({
+        ...global,
+        ...{ loggedIn: true, user: obj },
+      })
+    );
   }, []);
 
   return (

@@ -12,6 +12,7 @@ function InputV1({
   setValue = () => {
     console.log("Missing Set Value Prop");
   },
+  onFocus = () => {},
 }) {
   const handleChange = (e) => {
     setValue(e.target.value);
@@ -30,6 +31,7 @@ function InputV1({
         <input
           type={type}
           readOnly={readonly}
+          onFocus={onFocus}
           className="form-control"
           aria-label="Default"
           aria-describedby="inputGroup-sizing-default"

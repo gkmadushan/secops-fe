@@ -67,10 +67,10 @@ header div{
 .main-content{
   float:left;
   width: calc(100% - 220px);
-  @media (max-width:767px) {
-    width: calc(100% - 40px);
+  @media (max-width:768px) {
+    width: calc(100% - 40px) !important;
   }  
-  padding-left:20px;
+  padding-left:40px;
 }
 
 .full-width{
@@ -80,8 +80,10 @@ header div{
 }
 
 .shrink-width{
-  margin-left: 200px;
-  transition: all 1s;
+  @media(min-width:769px){
+    margin-left: 200px;
+    transition: all 1s;
+  }
 }
 
 .table{
@@ -227,4 +229,119 @@ textarea{
   height:500px;
   margin-bottom:50px;
   clear: both;
+}
+
+/* timeline */
+.timeline {
+  position: relative;
+  max-width: 1200px;
+  margin: 0 auto;
+  box-sizing: border-box;
+
+  .content {
+    padding: 20px 30px;
+    background-color: lightgray;
+    color:black;
+    position: relative;
+    border-radius: 6px;
+    box-sizing: border-box;
+  }
+}
+
+.timeline::after {
+  content: '';
+  position: absolute;
+  width: 6px;
+  background-color: green;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  margin-left: -3px;
+}
+
+.container-tl {
+  padding: 10px 40px;
+  position: relative;
+  background-color: inherit;
+  width: 50%;
+  box-sizing: border-box;
+}
+
+.container-tl::after {
+  content: '';
+  position: absolute;
+  width: 25px;
+  height: 25px;
+  right: -17px;
+  background-color: white;
+  border: 4px solid black;
+  top: 15px;
+  border-radius: 50%;
+  z-index: 1;
+}
+
+.left {
+  left: -5px;
+}
+
+.right {
+  left: calc(50% + 3px);
+}
+
+.left::before {
+  content: " ";
+  height: 0;
+  position: absolute;
+  top: 22px;
+  width: 0;
+  z-index: 1;
+  right: 30px;
+  border: medium solid white;
+  border-width: 10px 0 10px 10px;
+  border-color: transparent transparent transparent lightgray;
+}
+
+.right::before {
+  content: " ";
+  height: 0;
+  position: absolute;
+  top: 22px;
+  width: 0;
+  z-index: 1;
+  left: 30px;
+  border: medium solid white;
+  border-width: 10px 10px 10px 0;
+  border-color: transparent lightgray transparent transparent;
+}
+
+.right::after {
+  left: -16px;
+}
+
+
+@media screen and (max-width: 960px) {
+  .timeline::after {
+    left: 28px;
+  }
+  
+  .container-tl {
+    width: 100%;
+    padding-left: 70px;
+    padding-right: 25px;
+  }
+  
+  .container-tl::before {
+    left: 60px;
+    border: medium solid white;
+    border-width: 10px 10px 10px 0;
+    border-color: transparent white transparent transparent;
+  }
+
+  .left::after, .right::after {
+    left: 15px;
+  }
+  
+  .right {
+    left: 0%;
+  }
 }

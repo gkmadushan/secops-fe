@@ -39,15 +39,15 @@ async function deleteEnvironment(id, callback) {
 const tdConfig = {
   index: { align: "right", width: "30px" },
   name: { align: "left" },
-  scan_start_time: { align: "left", width: "50px" },
-  scan_terminate_time: { align: "left", width: "50px" },
+  // scan_start_time: { align: "left", width: "50px" },
+  // scan_terminate_time: { align: "left", width: "50px" },
   active: { align: "center", width: "50px" },
 };
 const headings = {
   index: "#",
   name: "Name",
-  scan_start_time: "Scan Start",
-  scan_terminate_time: "Scan Terminate",
+  // scan_start_time: "Scan Start",
+  // scan_terminate_time: "Scan Terminate",
   active: "Active",
 };
 

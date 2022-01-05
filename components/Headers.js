@@ -39,10 +39,10 @@ function Headers() {
       <div className="page-title d-none d-md-block">{global.pageTitle}</div>
       <div className="user-menu d-none d-sm-block">
         <span>Logged in as {global?.user?.name}</span>
-        <a href="#">
+        {/* <a href="#">
           Inbox (
           <b>{global && global.notifications ? global.notifications : 0}</b>)
-        </a>
+        </a> */}
         <span className="pointer" onClick={(e) => handleLogout(e)}>
           Logout
         </span>

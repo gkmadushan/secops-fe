@@ -9,6 +9,10 @@
     top:90px;
     display: block;
 
+    @media(max-width:768px){
+        width:35px;
+    }
+
     ul{
         list-style: none;
         padding-left:0px;

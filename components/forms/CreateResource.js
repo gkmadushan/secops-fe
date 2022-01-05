@@ -34,7 +34,6 @@ async function testConnection(request, setResponse, setOs) {
   setResponse("Loading...");
   const { data } = await Axios.post("/v1/resources/connection-test", request);
   setResponse(data.detail ?? "Connection successful");
-  console.log("OS", data);
   setOs(data.osname ?? "");
   return data;
 }
@@ -116,7 +115,7 @@ function CreateResource({ show, setShow, refetch = null }) {
       size="lg"
     >
       <Modal.Header closeButton>
-        <Modal.Title>Create Software Resource</Modal.Title>
+        <Modal.Title>Create Resource</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <form
@@ -179,6 +178,8 @@ function CreateResource({ show, setShow, refetch = null }) {
             label="Console Username"
             value={username}
             setValue={setUsername}
+            readonly={true}
+            onFocus={(e) => e.target.removeAttribute("readonly")}
             required
             validationError="Username is required"
           />
@@ -186,7 +187,9 @@ function CreateResource({ show, setShow, refetch = null }) {
             label="Console Password "
             shortcut="WILL NOT STORE"
             type="password"
+            onFocus={(e) => e.target.removeAttribute("readonly")}
             value={password}
+            readonly={true}
             setValue={setPassword}
             required
             validationError="Password is required"

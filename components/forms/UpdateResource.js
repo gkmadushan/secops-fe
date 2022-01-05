@@ -183,7 +183,7 @@ function UpdateResource({ id, show, setShow, refetch = null }) {
       size="lg"
     >
       <Modal.Header closeButton>
-        <Modal.Title>Update Software Resource</Modal.Title>
+        <Modal.Title>Update Resource</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <form
