@@ -15,8 +15,10 @@ const QuillNoSSRWrapper = dynamic(import("react-quill"), {
 });
 
 async function getIssue(id) {
-  const { data } = await Axios.get("/v1/issues/" + id);
-  return data.data;
+  if (id) {
+    const { data } = await Axios.get("/v1/issues/" + id);
+    return data.data;
+  }
 }
 
 async function getActionTypes() {

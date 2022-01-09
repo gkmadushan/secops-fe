@@ -92,6 +92,15 @@ export default function Confirm() {
         </pre>
       </p>
 
+      <p align="left">
+        <pre>
+          Password Policy
+          <ul>
+            <li>Password should contain minimum 8 characters.</li>
+          </ul>
+        </pre>
+      </p>
+
       {isFetching ? (
         <div className="text-center">
           <FontAwesomeIcon icon={["fas", "circle-notch"]} spin size="5x" />

@@ -143,7 +143,7 @@ function UpdateEnvironment({ id, show, setShow, refetch = null }) {
       size="lg"
     >
       <Modal.Header closeButton>
-        <Modal.Title>Create Software Environment</Modal.Title>
+        <Modal.Title>Update Software Environment</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <form

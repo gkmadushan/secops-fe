@@ -45,45 +45,50 @@ export default function Home() {
   }, []);
 
   return (
-    // <div className="row">
-    //   {issueSummaryDiagram &&
-    //     issueSummaryDiagram.data &&
-    //     issueSummaryDiagram.data.map((diagram) => (
-    //       <div className="col-md-5">
-    //         <img src={"data:image/svg+xml;base64," + diagram} />
-    //       </div>
-    //     ))}
-    //   {scanSummaryDiagram &&
-    //     scanSummaryDiagram?.data?.map((diagram) => (
-    //       <div className="col-md-10">
-    //         <img src={"data:image/svg+xml;base64," + diagram} />
-    //       </div>
-    //     ))}
-    // </div>
-    <div class="timeline">
-      {cveData?.data?.data?.map((cve, index) => (
-        <div
-          class={["container-tl ", index % 2 == 0 ? "left" : "right"].join(" ")}
-        >
-          <div class="content">
-            <h2>{cve.publish_date}</h2>
-            {cve?.list?.map((cveInfo) => (
-              <>
-                <h6>
-                  {cveInfo.cve} <Severity score={cveInfo.score} />
-                </h6>
-                <p>{cveInfo.description}</p>
-                <p>
-                  <a href={cveInfo.url} target="_blank">
-                    {cveInfo.url}
-                  </a>
-                </p>
-              </>
-            ))}
+    <>
+      <h1>Issue Dashboard</h1>
+      <div className="row">
+        {issueSummaryDiagram?.data?.map((diagram) => (
+          <div className="col-md-5">
+            <img src={"data:image/svg+xml;base64," + diagram} />
           </div>
-        </div>
-      ))}
-    </div>
+        ))}
+        {/* {scanSummaryDiagram &&
+          scanSummaryDiagram?.data?.map((diagram) => (
+            <div className="col-md-10">
+              <img src={"data:image/svg+xml;base64," + diagram} />
+            </div>
+          ))} */}
+      </div>
+      <h1>News</h1>
+      <div className="timeline">
+        {cveData?.data?.data?.map((cve, index) => (
+          <div
+            className={[
+              "container-tl ",
+              index % 2 == 0 ? "left" : "right",
+            ].join(" ")}
+          >
+            <div className="content">
+              <h2>{cve.publish_date}</h2>
+              {cve?.list?.map((cveInfo) => (
+                <>
+                  <h6>
+                    {cveInfo.cve} <Severity score={cveInfo.score} />
+                  </h6>
+                  <p>{cveInfo.description}</p>
+                  <p>
+                    <a href={cveInfo.url} target="_blank">
+                      {cveInfo.url}
+                    </a>
+                  </p>
+                </>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </>
   );
 }
 

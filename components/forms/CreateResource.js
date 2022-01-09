@@ -22,10 +22,15 @@ async function getOs() {
   return data.data;
 }
 
-async function createResource(request, refetch = null) {
-  const { data } = await Axios.post("/v1/resources", request);
+async function createResource(request, refetch, setShow, setErrors) {
+  const { data, errors, error } = await Axios.post("/v1/resources", request);
   if (refetch !== null) {
     refetch();
+  }
+  if (data?.detail) {
+    setErrors(data.detail);
+  } else {
+    setShow(false);
   }
   return data;
 }
@@ -51,6 +56,7 @@ function CreateResource({ show, setShow, refetch = null }) {
   const [password, setPassword] = useState("");
   const [os, setOs] = useState("");
   const [connectionTestResponse, setConnectionTestResponse] = useState("");
+  const [errors, setErrors] = useState(null);
 
   const handleCreateResource = (e) => {
     e.preventDefault();
@@ -67,8 +73,7 @@ function CreateResource({ show, setShow, refetch = null }) {
       password: password,
       os: os,
     };
-    createResource(request, refetch);
-    setShow(false);
+    createResource(request, refetch, setShow, setErrors);
   };
 
   const handleTestConnection = (e) => {
@@ -227,7 +232,7 @@ function CreateResource({ show, setShow, refetch = null }) {
 
           <h6>Actions</h6>
           <hr />
-
+          {errors && <div class="alert alert-danger">{errors}</div>}
           <input className="btn btn-primary" type="submit" value="Save" />
         </form>
       </Modal.Body>

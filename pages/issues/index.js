@@ -25,7 +25,7 @@ async function getResources() {
 }
 
 async function getStatusOptions() {
-  const { data } = await Axios.get("/v1/issues/issue-status?limit=" + 100);
+  const { data } = await Axios.get("/v1/issue-status?limit=" + 100);
   return data.data;
 }
 
@@ -54,7 +54,9 @@ export default function Issues() {
   const global = useContext(GlobalContext);
   const [page, setPage] = useState(1);
   const [titleFilter, setTitleFilter] = useState("");
-  const [statusFilter, setStatusFilter] = useState(null);
+  const [statusFilter, setStatusFilter] = useState(
+    "63a7d8d8-7fb7-476a-9354-1dff769b7a0f"
+  );
   const [vendorFilter, setVendorFilter] = useState("");
   const [resourceFilter, setResourceFilter] = useState(null);
   const [issueIdFilter, setIssueIdFilter] = useState(null);
