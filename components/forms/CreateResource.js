@@ -206,14 +206,16 @@ function CreateResource({ show, setShow, refetch = null }) {
             required
             validationError="Port is required"
           />
-          <input
-            className="btn btn-outline-primary mr-2 mb-3"
-            type="submit"
-            value="Test Connection"
-            onClick={(e) => {
-              handleTestConnection(e);
-            }}
-          />
+          {password?.length > 0 && (
+            <input
+              className="btn btn-outline-primary mr-2 mb-3"
+              type="submit"
+              value="Test Connection"
+              onClick={(e) => {
+                handleTestConnection(e);
+              }}
+            />
+          )}
           {connectionTestResponse && (
             <div class="alert alert-primary">{connectionTestResponse}</div>
           )}

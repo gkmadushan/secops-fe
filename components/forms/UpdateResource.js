@@ -31,7 +31,7 @@ async function getOs() {
 }
 
 async function testConnection(request, setResponse, setOs) {
-  setResponse("Loading...");
+  setResponse("In progress...");
   const { data } = await Axios.post("/v1/resources/connection-test", request);
   setResponse(data.detail ?? "Connection successful");
   setOs(data.osname ?? "");
@@ -175,6 +175,10 @@ function UpdateResource({ id, show, setShow, refetch = null }) {
     staleTime: 5000,
   });
 
+  useEffect(() => {
+    setConnectionTestResponse(null);
+  }, [id]);
+
   return (
     <Modal
       show={show}
@@ -257,14 +261,16 @@ function UpdateResource({ id, show, setShow, refetch = null }) {
             validationError="Protocol is required"
           />
           <CheckboxV1 label="Active" value={active} setValue={setActive} />
-          <input
-            className="btn btn-outline-primary mr-2 mb-3"
-            type="submit"
-            value="Test Connection"
-            onClick={(e) => {
-              handleTestConnection(e);
-            }}
-          />
+          {password?.length > 0 && (
+            <input
+              className="btn btn-outline-primary mr-2 mb-3"
+              type="submit"
+              value="Test Connection"
+              onClick={(e) => {
+                handleTestConnection(e);
+              }}
+            />
+          )}
           {connectionTestResponse && (
             <div class="alert alert-primary">{connectionTestResponse}</div>
           )}

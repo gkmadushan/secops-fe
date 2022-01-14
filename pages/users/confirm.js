@@ -88,15 +88,9 @@ export default function Confirm() {
                 Microsoft Authenticator
               </a>
             </li>
-          </ul>
-        </pre>
-      </p>
-
-      <p align="left">
-        <pre>
-          Password Policy
-          <ul>
-            <li>Password should contain minimum 8 characters.</li>
+            <li>
+              <a href="#">Password should contain minimum 8 characters.</a>
+            </li>
           </ul>
         </pre>
       </p>
