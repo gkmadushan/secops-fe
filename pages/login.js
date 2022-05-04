@@ -76,7 +76,7 @@ export default function Login() {
           value={otp}
           onChange={(e) => setOtp(e.target.value)}
           className="form-control"
-          id="password"
+          id="otp"
           placeholder="Ontime Password (OTP)"
         />
       </pre>

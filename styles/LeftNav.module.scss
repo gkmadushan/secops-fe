@@ -2,9 +2,9 @@
     max-width:210px;
     height:90vh;
     border-right:1px solid #ccc;
-    overflow:hidden;
+    // overflow:hidden;
     float:left;
-    overflow:hidden;
+    // overflow:hidden;
     position: fixed;
     top:90px;
     display: block;
@@ -52,6 +52,12 @@
 
 .hide{
     width:35px;
+    transition: width 1s;
+
+    width:220px;    
+    @media (max-width:767px) {
+        width:35px;    
+    }
     transition: width 1s;
 }
 

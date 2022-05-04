@@ -132,7 +132,12 @@ export default function Environments() {
       <div className="row">
         <div className="col-md-6">
           <h6>Filter by</h6>
-          <InputV1 label="Name" value={nameFilter} setValue={setNameFilter} />
+          <InputV1
+            label="Name"
+            id="namefilter"
+            value={nameFilter}
+            setValue={setNameFilter}
+          />
           {groupOptions ? (
             <SelectV1
               label="Group"

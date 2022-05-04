@@ -15,6 +15,7 @@ import CheckboxV1 from "../../components/input/CheckboxV1";
 import SelectV1 from "../../components/input/SelectV1";
 import CreateResource from "../../components/forms/CreateResource";
 import UpdateResource from "../../components/forms/UpdateResource";
+import SSH from "../../components/forms/SSH";
 
 async function getEnvironments() {
   const { data } = await Axios.get("/v1/environments?limit=" + 100);
@@ -91,6 +92,8 @@ export default function Resources() {
     useState(false);
   const [scanId, setScanId] = useState(null);
   const [resourceName, setResourceName] = useState("");
+  const [SSHID, setSSHID] = useState(null);
+  const [showSSH, setShowSSH] = useState(false);
 
   const { status, data, error, isFetching, refetch } = useQuery(
     ["resources", page],
@@ -139,6 +142,12 @@ export default function Resources() {
     setScanId(id);
     setResourceName(name);
     setShowAdhocScanConfirmation(true);
+  };
+
+  const sshHandler = (e, id, name) => {
+    e.preventDefault();
+    setSSHID(id);
+    setShowSSH(true);
   };
 
   const adhocScanCallback = (autofix) => {
@@ -287,7 +296,16 @@ export default function Resources() {
                       );
                     }
                   })}
-                  <td width="250px" align="center">
+                  <td width="320px" align="center">
+                    <a
+                      href="#"
+                      className="btn btn-outline-primary btn-sm mr-2"
+                      onClick={(e) => {
+                        sshHandler(e, d.id, d.name);
+                      }}
+                    >
+                      SSH
+                    </a>
                     <a
                       href="#"
                       className="btn btn-outline-primary btn-sm mr-2"
@@ -369,6 +387,7 @@ export default function Resources() {
         callback={adhocScanCallback}
         label="Perform Adhoc Scan"
       />
+      <SSH show={showSSH} setShow={setShowSSH} label="Perform Adhoc Scan" />
     </div>
   );
 }

@@ -5,6 +5,7 @@ import GlobalContext from "../utils/GlobalContext";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/router";
+import Head from "next/head";
 
 const loadUser = async () => {
   const userdata = await localStorage.getItem("userdata");
@@ -26,6 +27,9 @@ function index({ children }) {
 
   return (
     <>
+      <Head>
+        <title>SecOps - Automated Vulnerablity Management System</title>
+      </Head>
       <Headers />
 
       <div>

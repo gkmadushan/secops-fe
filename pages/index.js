@@ -50,7 +50,10 @@ export default function Home() {
       <div className="row">
         {issueSummaryDiagram?.data?.map((diagram) => (
           <div className="col-md-5">
-            <img src={"data:image/svg+xml;base64," + diagram} />
+            <img
+              src={"data:image/svg+xml;base64," + diagram}
+              alt="Issue Summary Graph"
+            />
           </div>
         ))}
         {/* {scanSummaryDiagram &&

@@ -51,4 +51,8 @@ module.exports = {
     BASE_URL: "http://localhost:8089",
     LIMIT: 10,
   },
+  i18n: {
+    locales: ["en"],
+    defaultLocale: "en",
+  },
 };

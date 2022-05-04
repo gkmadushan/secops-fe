@@ -29,6 +29,7 @@ function InputV1({
           </span>
         </div>
         <input
+          id={label}
           type={type}
           readOnly={readonly}
           onFocus={onFocus}

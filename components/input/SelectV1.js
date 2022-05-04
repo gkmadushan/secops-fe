@@ -42,6 +42,7 @@ function SelectV1({
           </span>
         </div>
         <select
+          id={label}
           value={value}
           onChange={(e) => {
             handleChange(e);
